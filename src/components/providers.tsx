@@ -1,6 +1,6 @@
 "use client" ; 
 
-import { ClerkProvider , SignInButton, SignUpButton, useAuth, UserButton } from "@clerk/nextjs";
+import { ClerkProvider , SignInButton, SignUpButton, useAuth } from "@clerk/nextjs";
 import { ConvexClient } from "convex/browser";
 import { Authenticated, AuthLoading, ConvexReactClient, Unauthenticated } from "convex/react";
 import { ConvexProviderWithClerk} from "convex/react-clerk" ; 
@@ -21,7 +21,6 @@ export const Providers = ({children} : {children: React.ReactNode}) => {
                     disableTransitionOnChange
                 >
                     <Authenticated>
-                        <UserButton />
                         {children}
                     </Authenticated>
                     <Unauthenticated>
