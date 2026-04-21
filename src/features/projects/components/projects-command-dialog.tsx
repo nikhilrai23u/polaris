@@ -13,6 +13,7 @@ import {
 
 import { useProjects } from "../hooks/use-projects";
 import { Doc } from "../../../../convex/_generated/dataModel";
+import { formatDistanceToNow } from "date-fns";
 
 interface ProjectsCommandDialogProps {
     open: boolean , 
@@ -66,6 +67,7 @@ export const ProjectsCommandDialog = ({
                         >
                             {getProjectIcon(project)}
                             <span>{project.name}</span>
+                            <span className="ml-auto">{formatDistanceToNow(project._creationTime , {addSuffix: true}) }</span>
                         </CommandItem>    
                     ))}
                 </CommandGroup>

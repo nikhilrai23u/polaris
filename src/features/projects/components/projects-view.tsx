@@ -12,6 +12,8 @@ import { ProjectsList } from "./projects-list";
 import { useCreateProject } from "../hooks/use-projects";
 import { useEffect, useState } from "react";
 import { ProjectsCommandDialog } from "./projects-command-dialog";
+import { NewProject } from "./new-project";
+import { useRouter } from "next/navigation";
 
 const font = Poppins({
     subsets: ["latin"] , 
@@ -37,7 +39,8 @@ export const ProjectsView = () => {
         return() => document.removeEventListener("keydown" , handleKeyDown) ; 
     } , []) ;
 
-
+    const router = useRouter() ; 
+    
     return (
         <>
             <ProjectsCommandDialog 
@@ -66,6 +69,7 @@ export const ProjectsView = () => {
                             <Button
                                 variant="outline"
                                 onClick={() => {
+                                    //<NewProject />
                                     const projectName = uniqueNamesGenerator({
                                         dictionaries: [
                                             adjectives,
@@ -79,7 +83,9 @@ export const ProjectsView = () => {
                                     createProject({
                                         name: projectName ,
                                     })
+                                        
                                 }}
+                                    
                                 className="h-full items-start justify-start p-4 bg-background border flex flex-col gap-6 rounded-none"
                             >
                                 <div className="flex items-center justify-between w-full">

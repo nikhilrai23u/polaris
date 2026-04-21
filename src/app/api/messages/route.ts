@@ -1,4 +1,4 @@
-import {success, z} from "zod" ;
+import { z } from "zod" ;
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { convex } from "@/lib/convex-client";
@@ -39,12 +39,39 @@ export async function POST(request: Request) {
     if(!conversation) {
         return NextResponse.json(
             {error: "Conversation not found"} , 
-            {status: 401}
+            {status: 404}
         );
     }
 
     const projectId = conversation.projectId ; 
 
+    const processingMessages = await convex.query(
+        api.system.getProcessingMessages , 
+        {
+            internalKey , 
+            projectId ,
+        }
+    );
+
+    if(processingMessages.length > 0) {
+        // cancel all processing messages
+        await Promise.all(
+            processingMessages.map(async(msg) => {
+                await inngest.send({
+                    name: "message/cancel" ,
+                    data: {
+                        messageId: msg._id , 
+                    },
+                });
+
+                await convex.mutation(api.system.updateMessageStatus , {
+                    internalKey,
+                    messageId: msg._id ,
+                    status: "cancelled" ,
+                });
+            })
+        );
+    }
 
     await convex.mutation(api.system.createMessage , {
         internalKey , 
@@ -70,8 +97,11 @@ export async function POST(request: Request) {
         name: "message/sent" , 
         data: {
             messageId: assistantMessageId ,
-        }
-    })
+            conversationId,
+            projectId,
+            message,
+        },
+    });
 
     return NextResponse.json({
         success: true  , 
