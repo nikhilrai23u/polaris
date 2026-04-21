@@ -23,7 +23,7 @@ export const create = mutation({
 
         const conversationId = await ctx.db.insert("conversations" , {
             projectId: args.projectId , 
-            title: args.projectId ,
+            title: args.title ,
             updatedAt: Date.now() ,
         });
 

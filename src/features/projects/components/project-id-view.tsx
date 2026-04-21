@@ -7,6 +7,8 @@ import { FaGithub } from "react-icons/fa";
 import { Allotment } from "allotment";
 import { FileExplorer } from "./file-explorer";
 import { EditorView } from "../../editor/components/editor-view";
+import { Separator } from "@radix-ui/react-separator";
+import { DrumstickIcon, TrashIcon } from "lucide-react";
 
 const MIN_SIDEBAR_WIDTH = 200 ; 
 const MAX_SIDEBAR_WIDTH = 800 ; 
@@ -57,8 +59,13 @@ export const ProjectIdView = ({
                 <div className="flex-1 flex justify-end h-full">
                     <div className="flex items-center gap-1.5 h-full px-3 cursor-pointer text-muted-foreground border-l hover:bg-accent/30">
                         <FaGithub className="size-3.5" />
-                        <span className="text-sm">Export</span>
+                        <span className="text-sm">Export</span>   
                     </div>
+                    <div className="flex items-center gap-1.5 h-full px-3 cursor-pointer text-muted-foreground border-l hover:bg-accent/30">
+                        <TrashIcon className="size-3.5"/>
+                        <button className="">Delete Project</button>
+                    </div>
+
                 </div>
             </nav>
             <div className="flex-1 relative">
