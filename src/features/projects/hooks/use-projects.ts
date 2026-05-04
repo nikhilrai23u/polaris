@@ -82,3 +82,7 @@ export const useRenameProject  = () => {
         }
     ) ; 
 }
+
+export const useUpdateProjectSettings = () => {
+    return useMutation(api.projects.updateSettings) ; 
+}
