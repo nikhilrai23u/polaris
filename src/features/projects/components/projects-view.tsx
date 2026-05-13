@@ -7,13 +7,10 @@ import { Button } from "@/components/ui/button";
 import { SparkleIcon } from "lucide-react";
 import { Kbd } from "@/components/ui/kbd";
 import {FaGithub} from "react-icons/fa" ; 
-import {adjectives , animals , colors , uniqueNamesGenerator } from "unique-names-generator" ; 
 import { ProjectsList } from "./projects-list";
-import { useCreateProject } from "../hooks/use-projects";
 import { useEffect, useState } from "react";
 import { ProjectsCommandDialog } from "./projects-command-dialog";
 import { NewProjectDialog } from "./new-project-dialog";
-import { useRouter } from "next/navigation";
 import { ImportGithubDialog } from "./import-github-dialog";
 
 const font = Poppins({
@@ -22,8 +19,6 @@ const font = Poppins({
 })
 
 export const ProjectsView = () => {
-    const createProject = useCreateProject() ;  
-
     const [commandDialogOpen , setCommandDialogOpen] = useState(false) ; 
     const [importDialogOpen , setImportDialogOpen] = useState(false) ; 
     const [NewProjectDialogOpen , setNewProjectDialogOpen] = useState(false) ; 

@@ -3,14 +3,12 @@
 import { cn } from "@/lib/utils";
 import { Id } from "../../../../convex/_generated/dataModel";
 import { useState } from "react";
-import { FaGithub } from "react-icons/fa";
 import { Allotment } from "allotment";
 import { FileExplorer } from "./file-explorer";
 import { EditorView } from "../../editor/components/editor-view";
-import { Separator } from "@radix-ui/react-separator";
-import { DrumstickIcon, TrashIcon } from "lucide-react";
 import { PreviewView } from "./preview-view";
 import { ExportPopover } from "./export-popover";
+import { DeleteProjectDialog } from "./delete-project";
 
 const MIN_SIDEBAR_WIDTH = 200 ; 
 const MAX_SIDEBAR_WIDTH = 800 ; 
@@ -44,7 +42,8 @@ export const ProjectIdView = ({
 } : {
     projectId : Id<"projects">
 }) => {
-    const [activeView , setActiveView] = useState<"editor" | "preview">("editor") ; 
+    const [activeView , setActiveView] = useState<"editor" | "preview">("editor") ;
+
     return(
         <div className="h-full flex flex-col">
             <nav className="h-8.75 flex items-center bg-sidebar border-b">
@@ -60,11 +59,7 @@ export const ProjectIdView = ({
                 /> 
                 <div className="flex-1 flex justify-end h-full">
                     <ExportPopover projectId={projectId} />
-                    <div className="flex items-center gap-1.5 h-full px-3 cursor-pointer text-muted-foreground border-l hover:bg-accent/30">
-                        <TrashIcon className="size-3.5"/>
-                        <button className="">Delete Project</button>
-                    </div>
-
+                    <DeleteProjectDialog projectId={projectId} />
                 </div>
             </nav>
             <div className="flex-1 relative">
