@@ -12,7 +12,7 @@ import { ProjectsList } from "./projects-list";
 import { useCreateProject } from "../hooks/use-projects";
 import { useEffect, useState } from "react";
 import { ProjectsCommandDialog } from "./projects-command-dialog";
-import { NewProject } from "./new-project";
+import { NewProjectDialog } from "./new-project-dialog";
 import { useRouter } from "next/navigation";
 import { ImportGithubDialog } from "./import-github-dialog";
 
@@ -26,6 +26,7 @@ export const ProjectsView = () => {
 
     const [commandDialogOpen , setCommandDialogOpen] = useState(false) ; 
     const [importDialogOpen , setImportDialogOpen] = useState(false) ; 
+    const [NewProjectDialogOpen , setNewProjectDialogOpen] = useState(false) ; 
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -38,6 +39,10 @@ export const ProjectsView = () => {
                     e.preventDefault() ; 
                     setImportDialogOpen(true) ; 
                 }
+                if(e.key === "j") {
+                    e.preventDefault() ; 
+                    setNewProjectDialogOpen(true) ; 
+                }
             }
         } 
 
@@ -45,7 +50,7 @@ export const ProjectsView = () => {
         return() => document.removeEventListener("keydown" , handleKeyDown) ; 
     } , []) ;
 
-    //const router = useRouter() ; 
+    
     
     return (
         <>
@@ -56,6 +61,10 @@ export const ProjectsView = () => {
             <ImportGithubDialog 
                 open={importDialogOpen}
                 onOpenChange={setImportDialogOpen}
+            />
+            <NewProjectDialog 
+                open={NewProjectDialogOpen}
+                onOpenChange={setNewProjectDialogOpen}
             />
             <div className="min-h-screen bg-sidebar flex flex-col items-center justify-center p-6 md:p-16">
                 <div className="w-full max-w-sm mx-auto flex flex-col gap-4 items-center">
@@ -78,24 +87,9 @@ export const ProjectsView = () => {
                         <div className="grid grid-cols-2 gap-2">
                             <Button
                                 variant="outline"
-                                onClick={() => {
-                                    //<NewProject />
-                                    const projectName = uniqueNamesGenerator({
-                                        dictionaries: [
-                                            adjectives,
-                                            animals,
-                                            colors,
-                                        ],
-                                        separator: "_" ,
-                                        length: 3,
-                                    }); 
-
-                                    createProject({
-                                        name: projectName ,
-                                    })
-                                        
-                                }}
-                                    
+                                onClick={
+                                    () => setNewProjectDialogOpen(true)
+                                }
                                 className="h-full items-start justify-start p-4 bg-background border flex flex-col gap-6 rounded-none"
                             >
                                 <div className="flex items-center justify-between w-full">
