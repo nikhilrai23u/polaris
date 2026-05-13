@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import { IBM_Plex_Mono ,Inter } from "next/font/google";
 import "allotment/dist/style.css" ; 
 import "./globals.css";
-import { ThemeProvider } from "@/components/theme-provider";
+//import { ThemeProvider } from "@/components/theme-provider";
 import { Providers } from "@/components/providers";
-import {dark} from '@clerk/themes' ; 
+//import {dark} from '@clerk/themes' ; 
 import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({
