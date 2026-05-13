@@ -14,6 +14,7 @@ import {
 import { useProjects } from "../hooks/use-projects";
 import { Doc } from "../../../../convex/_generated/dataModel";
 import { formatDistanceToNow } from "date-fns";
+import { Button } from "@/components/ui/button";
 
 interface ProjectsCommandDialogProps {
     open: boolean , 
