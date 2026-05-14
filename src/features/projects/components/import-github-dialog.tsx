@@ -1,83 +1,87 @@
-import { useClerk } from "@clerk/nextjs";
-import { useForm } from "@tanstack/react-form";
-import ky, { HTTPError } from "ky";
-import { useRouter } from "next/navigation";
-import z from "zod";
-import { Id } from "../../../../convex/_generated/dataModel";
-import { toast } from "sonner";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Field, FieldError, FieldLabel } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+"use client" ;
+
+import { useClerk } from "@clerk/nextjs" ;
+import { useForm } from "@tanstack/react-form" ;
+import ky, { HTTPError } from "ky" ;
+import { useRouter } from "next/navigation" ;
+import z from "zod" ;
+import { Id } from "../../../../convex/_generated/dataModel" ;
+import { toast } from "sonner" ;
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog" ;
+import { Field, FieldError, FieldLabel } from "@/components/ui/field" ;
+import { Input } from "@/components/ui/input" ;
+import { Button } from "@/components/ui/button" ;
+import { useState } from "react" ;
 
 const formSchema = z.object({
     url: z.url("Please enter a valid Url.") ,
-});
+}) ;
 
 interface ImportGithubDialogProps {
-    open: boolean ; 
-    onOpenChange: (open: boolean) => void ; 
-};
+    open: boolean ;
+    onOpenChange: (open: boolean) => void ;
+}
+
+const DEMO_REPO_URL = 'https://github.com/nikhilrai23u/Demo-Project' ;
 
 export const ImportGithubDialog = ({
-    open , 
+    open ,
     onOpenChange ,
 } : ImportGithubDialogProps) => {
-    const router = useRouter() ; 
-    const {openUserProfile} = useClerk() ; 
+    const router = useRouter() ;
+    const {openUserProfile} = useClerk() ;
+    const [isImporting , setIsImporting] = useState(false) ;
 
     const form = useForm({
         defaultValues: {
-            url: "" , 
+            url: "" ,
         },
         validators: {
             onSubmit: formSchema ,
         },
         onSubmit: async({value}) => {
-            try {
-                const {projectId} =  await ky
-                    .post("/api/github/import" , {
-                        json: {url: value.url} , 
-                    })
-                    .json<{
-                        success: boolean;
-                        projectId: Id<"projects">;
-                        eventId: string ;
-                    }>()
-
-                    toast.success("Importing repository....") ; 
-                    onOpenChange(false) ; 
-                    form.reset() ;
-            
-                    router.push(`/projects/${projectId}`) ;
-                } catch(error) {
-                    if(error instanceof HTTPError) {
-                        const body = await error.response.json<{error: string}>() ;
-                        /*if(body?.error?.includes("Pro plan required")){
-                            toast.error("Upgrade to import repositories",{
-                                action : {
-                                    label: "Upgrade" , 
-                                    onClick: () => openUserProfile() ,
-                                },
-                            });
-                            onOpenChange(false) ; 
-                            return ; 
-                        };*/
-                        if(body?.error?.includes("GitHub not connected")){
-                            toast.error("GitHub account not connected",{
-                                action : {
-                                    label: "Connect" , 
-                                    onClick: () => openUserProfile() ,
-                                },
-                            });
-                            onOpenChange(false) ; 
-                            return ; 
-                        };
-                    }
-                    toast.error("Unable to import respository. Please check the url and try again.") ;
-            }
+            await importFromUrl(value.url.trim()) ;
         },
-    });
+    }) ;
+
+    async function importFromUrl(url: string) {
+        if(!url) return ;
+
+        setIsImporting(true) ;
+        try {
+            const {projectId} = await ky
+                .post("/api/github/import" , {
+                    json: {url} ,
+                })
+                .json<{
+                    success: boolean ;
+                    projectId: Id<"projects"> ;
+                    eventId: string ;
+                }>() ;
+
+            toast.success("Importing repository....") ;
+            onOpenChange(false) ;
+            form.reset() ;
+            router.push(`/projects/${projectId}`) ;
+        } catch(error) {
+            if(error instanceof HTTPError) {
+                const body = await error.response.json<{error: string}>() ;
+                if(body?.error?.includes("GitHub not connected")) {
+                    toast.error("GitHub account not connected" , {
+                        action: {
+                            label: "Connect" ,
+                            onClick: () => openUserProfile() ,
+                        },
+                    }) ;
+                    onOpenChange(false) ;
+                    return ;
+                }
+            }
+            toast.error("Unable to import repository. Please check the url and try again.") ;
+        } finally {
+            setIsImporting(false) ;
+        }
+    }
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange} >
@@ -90,13 +94,13 @@ export const ImportGithubDialog = ({
                 </DialogHeader>
                 <form
                     onSubmit={(e) => {
-                        e.preventDefault() ; 
-                        form.handleSubmit() ; 
+                        e.preventDefault() ;
+                        form.handleSubmit() ;
                     }}
                 >
                     <form.Field name="url">
                         {(field) => {
-                            const isInvalid = 
+                            const isInvalid =
                                 field.state.meta.isTouched && !field.state.meta.isValid ;
 
                             return (
@@ -112,35 +116,46 @@ export const ImportGithubDialog = ({
                                         onChange={(e) => field.handleChange(e.target.value)}
                                         aria-invalid={isInvalid}
                                         placeholder="https://github.com/owner/repo"
+                                        disabled={isImporting}
                                     />
                                     {isInvalid && <FieldError errors={field.state.meta.errors} />}
                                 </Field>
-                            )
+                            ) ;
                         }}
                     </form.Field>
                     <DialogFooter className="mt-4">
                         <Button
                             type="button"
+                            //variant="secondary"
+                            className="mr-auto"
+                            disabled={isImporting}
+                            onClick={() => void importFromUrl(DEMO_REPO_URL)}
+                        >
+                            Import demo project
+                        </Button>
+                        <Button
+                            type="button"
                             variant="outline"
                             onClick={() => onOpenChange(false)}
+                            disabled={isImporting}
                         >
-                            Cancel    
-                        </Button> 
+                            Cancel
+                        </Button>
                         <form.Subscribe
                             selector={(state) => [state.canSubmit , state.isSubmitting]}
                         >
                             {([canSubmit , isSubmitting]) => (
-                                <Button 
-                                    type="submit" 
-                                    disabled={!canSubmit || isSubmitting}
+                                <Button
+                                    type="submit"
+                                    disabled={!canSubmit || isSubmitting || isImporting}
                                 >
-                                    {isSubmitting ? "Importing..." : "Import"}
+                                    {isSubmitting || isImporting ? "Importing..." : "Import"}
                                 </Button>
                             )}
-                        </form.Subscribe>   
+                        </form.Subscribe>
                     </DialogFooter>
                 </form>
             </DialogContent>
         </Dialog>
-    )
-};
+    ) ;
+} ;
